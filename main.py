@@ -83,14 +83,14 @@ def get_song_uri(q: str, content_type: str = "track", artist: str = ""):
 
         if compare_letter_frequency(q, song_name) and compare_letter_frequency(artist, artist_name):
             uris.append(item['uri'])
-        elif artist == "Dean Martin":
-            # c.print(item)
-            # input()
-            c.print(f"\n\nwanted song: {string_filter(q)} : got: {song_name}")
-            c.print(f"wanted song: {string_filter(artist)} : got: {artist_name}")
+        # elif artist == "Dean Martin":
+        #     # c.print(item)
+        #     # input()
+        #     c.print(f"\n\nwanted song: {string_filter(q)} : got: {song_name}")
+        #     c.print(f"wanted song: {string_filter(artist)} : got: {artist_name}")
 
-            c.print(f"result song: {compare_letter_frequency(q, song_name, True)}\n")
-            c.print(f"result artist: {compare_letter_frequency(artist, artist_name, True)}\n\n")
+        #     c.print(f"result song: {compare_letter_frequency(q, song_name, True)}\n")
+        #     c.print(f"result artist: {compare_letter_frequency(artist, artist_name, True)}\n\n")
             # input()
 
 
