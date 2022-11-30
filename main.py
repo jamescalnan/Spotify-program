@@ -50,7 +50,7 @@ def compare_letter_frequency(inputted: str, api_response: str, debug=False):
 
     return False
 
-def get_song_uri(q: str, content_type: str = "track", artist: str = ""):
+def get_song_uri(q: str, content_type: str = "track", artist: str = "", exact:str = ""):
     query = f'https://api.spotify.com/v1/search?q={q}&type={content_type}'
 
     response = requests.get(query, 
@@ -81,8 +81,13 @@ def get_song_uri(q: str, content_type: str = "track", artist: str = ""):
         # c.print(compare_letter_frequency(api_artist_name_freq, get_letter_frequency(artist)))
 
 
-        if compare_letter_frequency(q, song_name) and compare_letter_frequency(artist, artist_name):
-            uris.append(item['uri'])
+        if compare_letter_frequency(q, song_name):
+            if exact == "y":
+                if compare_letter_frequency(artist, artist_name):
+                    uris.append(item['uri'])
+            else:
+                uris.append(item['uri'])
+
         # elif artist == "Dean Martin":
         #     # c.print(item)
         #     # input()
@@ -105,16 +110,25 @@ def get_song_uri(q: str, content_type: str = "track", artist: str = ""):
 def get_song_info(file_name: str):
     file = open(file_name, "r", encoding="utf8").read().split("\n")
     song_info = []
-    
+    c.print(file)
+    input()
     for line in file:
-        if " - " not in line: continue
-        try:
-            split_line = line.split(" ")
-            artist, song_name = " ".join(split_line[1:]).split(" - ")
-            song_info.append((artist, song_name))
-        except ValueError:
-            c.print(f"Error with {line}")
-            input()
+        if " - " not in line:
+            try:
+                split_line = line.split(" ")
+                artist, song_name = " ".join(split_line[1:]).split("(")
+                song_info.append((artist, song_name))
+            except ValueError:
+                c.print(f"Error with {line}")
+                input()
+        else:
+            try:
+                split_line = line.split(" ")
+                artist, song_name = " ".join(split_line[1:]).split(" - ")
+                song_info.append((artist, song_name))
+            except ValueError:
+                c.print(f"Error with {line}")
+                input()
 
     return song_info
 
@@ -131,16 +145,24 @@ def get_playlists(user_id):
     
     return info[:20]
 
-songs = get_song_info("song_names.txt")
+songs = get_song_info("new.txt")
 padding_number = len(str(len(songs))) + 6
 c.clear()
 all_uris = []
 token_expired = False  
 
+c.print("[*] Exact matches Y/N")
+exact = input().lower()
+if exact == "\n":
+    exact  = "n"
+c.clear()
+
+c.print(songs)
+
 for i, song in enumerate(songs):
     padding = f"({i + 1}/{len(songs)})"
     with c.status(f"searching for {song[1]} by {song[0]}", spinner="point"):
-        potential_uri = get_song_uri(song[1], "track", song[0])
+        potential_uri = get_song_uri(song[1], "track", song[0], exact)
     if potential_uri == "The access token expired":
         c.print(f"[*] [red]{potential_uri}")
         token_expired = True
